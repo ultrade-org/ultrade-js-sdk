@@ -1,3 +1,4 @@
+import { io } from 'socket.io-client';
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { DEFAULT_ORDER_EXPIRATION_DAYS, ORDER_MSG_VERSION } from '@ultrade/shared/browser/constants';
 import { getRandomInt } from '@ultrade/shared/browser/common';
@@ -126,7 +127,7 @@ export class Client implements IClient {
     
     this.socketManager = new SocketManager(
       this.websocketUrl,
-      options.socketIO,
+      io,
       (socketId) => {
         console.log(`Socket ${socketId} disconnected at`, new Date());
       },

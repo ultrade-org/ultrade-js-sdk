@@ -4,7 +4,6 @@ import {
   IMarketForClient,
   ISystemForClient,
   IWalletForClient,
-  SocketIOFactory,
   IAffiliateForClient,
   ISocialForClient,
 } from "@interface";
@@ -16,7 +15,6 @@ export interface ClientOptions {
   algoSdkClient: any;
   websocketUrl: string;
   companyId?: number;
-  socketIO: SocketIOFactory;
 }
 
 export interface IClient

@@ -1,21 +1,10 @@
+import type { Socket } from "socket.io-client";
+
 import { STREAMS } from "@enum";
 
-export interface SocketIOClient {
-  connected: boolean;
-  id: string;
-  on: (event: string, handler: (...args: unknown[]) => void) => void;
-  off: (event: string, handler?: (...args: unknown[]) => void) => void;
-  emit: (event: string, ...args: unknown[]) => void;
-  onAny: (handler: (event: string, ...args: unknown[]) => void) => void;
-  disconnect: () => void;
-  io: {
-    on: (event: string, handler: (...args: unknown[]) => void) => void;
-    off: (event: string, handler?: (...args: unknown[]) => void) => void;
-  };
-}
 
 export interface SocketIOFactory {
-  (url: string, options?: unknown): SocketIOClient;
+  (url: string, options?: unknown): Socket;
 }
 
 export interface AppSocketState {

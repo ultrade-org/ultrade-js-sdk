@@ -1,7 +1,8 @@
+import type { Socket } from 'socket.io-client';
+
 import {
   SubscribeOptions,
   SocketIOFactory,
-  SocketIOClient,
 } from '@interface';
 
 interface ISocketPool {
@@ -9,7 +10,7 @@ interface ISocketPool {
 }
 
 export class SocketManager {
-  private socket: SocketIOClient | null = null;
+  private socket: Socket | null = null;
   private socketPool: ISocketPool = {};
   private websocketUrl: string;
   private socketIOFactory: SocketIOFactory;
@@ -48,7 +49,7 @@ export class SocketManager {
     }
   }
 
-  public getSocket(): SocketIOClient | null {
+  public getSocket(): Socket | null {
     return this.socket;
   }
 
