@@ -778,7 +778,7 @@ for (let i = 0; i < history.t.length; i++) {
 
 ## Trading
 
-### createOrder
+### createSpotOrder
 
 Place a new order.
 
@@ -817,7 +817,7 @@ Place a new order.
 **Example:**
 
 ```typescript
-const order = await client.createOrder({
+const order = await client.createSpotOrder({
   pairId: 1,
   companyId: 1,
   orderSide: 'B',
