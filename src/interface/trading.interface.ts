@@ -18,7 +18,7 @@ export interface CancelOrderArgs {
   priceDecimal: number;
 }
 
-export interface CreateOrderArgs {
+export interface CreateSpotOrderArgs {
   pairId: number;
   companyId: number;
   orderSide: OrderSide;

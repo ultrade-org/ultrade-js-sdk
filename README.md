@@ -5,6 +5,12 @@ JavaScript/TypeScript SDK for Ultrade platform integration.
 
 The `@ultrade/ultrade-js-sdk` package provides a JavaScript/TypeScript interface for interacting with ULTRADE's V2 platform, the Native Exchange (NEX) with Bridgeless Crosschain Orderbook technology. It offers a simple interface for creating and managing orders, as well as for interacting with the Ultrade API and WebSocket streams.
 
+### Dependencies
+
+This package uses [`@ultrade/shared`](https://github.com/ultrade-org/ultrade-shared) as a core dependency. Many types, interfaces, enums, and utility functions are imported from the shared package, which provides common code, utilities, and types for Ultrade platform packages.
+
+**Shared Package Repository:** [https://github.com/ultrade-org/ultrade-shared](https://github.com/ultrade-org/ultrade-shared)
+
 ### Key Features
 
 - **Deposits**: Always credited to the logged in account
@@ -84,14 +90,14 @@ const client = new Client({
 ## Table of Contents
 
 1. [Authentication & Wallet](#authentication--wallet)
-2. [Market Data](#market-data)
-3. [Trading](#trading)
-4. [Account & Balances](#account--balances)
-5. [Wallet Operations](#wallet-operations)
-6. [Whitelist & Withdrawal Wallets](#whitelist--withdrawal-wallets)
-7. [KYC](#kyc)
-8. [WebSocket](#websocket)
-9. [System](#system)
+2. [System](#system)
+3. [Market Data](#market-data)
+4. [Trading](#trading)
+5. [Account & Balances](#account--balances)
+6. [Wallet Operations](#wallet-operations)
+7. [Whitelist & Withdrawal Wallets](#whitelist--withdrawal-wallets)
+8. [KYC](#kyc)
+9. [WebSocket](#websocket)
 10. [Notifications](#notifications)
 11. [Affiliates](#affiliates)
 12. [Social](#social)
@@ -105,18 +111,23 @@ const client = new Client({
 
 Authenticate a user with their wallet.
 
+**Type imports:**
+```typescript
+import { PROVIDERS, ILoginData } from '@ultrade/shared/browser/interfaces';
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `data` | `ILoginData` | Yes | Login data object |
 
-**ILoginData interface:**
+**ILoginData interface** (from `@ultrade/shared`):
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
 | `address` | `string` | Yes | Wallet address |
-| `provider` | `PROVIDERS` | Yes | Wallet provider (PERA, METAMASK, etc.) |
+| `provider` | `PROVIDERS` | Yes | Wallet provider enum (imported from `@ultrade/shared/browser/interfaces`, see [`PROVIDERS` enum](https://github.com/ultrade-org/ultrade-shared)) |
 | `chain` | `string` | No | Blockchain chain |
 | `referralToken` | `string` | No | Referral token |
 | `loginMessage` | `string` | No | Custom login message |
@@ -126,7 +137,7 @@ Authenticate a user with their wallet.
 **Example:**
 
 ```typescript
-import { PROVIDERS } from '@ultrade/ultrade-js-sdk';
+import { PROVIDERS, ILoginData } from '@ultrade/shared/browser/interfaces';
 import algosdk from 'algosdk';
 import { encodeBase64 } from '@ultrade/shared/browser/helpers';
 
@@ -187,29 +198,34 @@ client.mainWallet = {
 
 Create a new trading key for automated trading.
 
+**Type imports:**
+```typescript
+import { ITradingKeyData, TradingKeyType } from '@ultrade/shared/browser/interfaces';
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `data` | `ITradingKeyData` | Yes | Trading key data object |
 
-**ITradingKeyData interface:**
+**ITradingKeyData interface** (from `@ultrade/shared`):
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
 | `tkAddress` | `string` | Yes | Trading key address |
-| `device` | `string` | Yes | Device identifier |
-| `type` | `TradingKeyType` | Yes | Key type (User or Bot) |
+| `device` | `string` | No | Device identifier (user agent string, e.g., "Chrome 123.0.0.0 Blink Linux, desktop", "Chrome 121.0.0.0 Blink Android, mobile") |
+| `type` | `TradingKeyType` | No | Key type enum (imported from `@ultrade/shared/browser/interfaces`, see [`TradingKeyType` enum](https://github.com/ultrade-org/ultrade-shared)) |
 | `expiredDate` | `number` | No | Expiration timestamp (ms) |
 | `loginAddress` | `string` | Yes | Login wallet address |
-| `loginChainId` | `string \| number` | Yes | Login chain ID |
+| `loginChainId` | `number` | Yes | Login chain ID |
 
 **Returns:** `Promise<TradingKeyView>`
 
 **Example:**
 
 ```typescript
-import { TradingKeyType } from '@ultrade/ultrade-js-sdk';
+import { ITradingKeyData, TradingKeyType } from '@ultrade/shared/browser/interfaces';
 import algosdk from 'algosdk';
 
 // Generate new trading key account
@@ -219,21 +235,19 @@ const mnemonic = algosdk.secretKeyToMnemonic(generatedAccount.sk);
 // Expiration: 30 days from now (in milliseconds)
 const expirationTime = Date.now() + 30 * 24 * 60 * 60 * 1000;
 
-// Get device info
-const getDeviceInfo = () => {
-  const ua = navigator.userAgent;
-  if (/mobile/i.test(ua)) return 'mobile';
-  if (/tablet/i.test(ua)) return 'tablet';
-  return 'desktop';
-};
+// Get device info (returns full user agent string)
+// Examples: "Chrome 123.0.0.0 Blink Linux, desktop", 
+//           "Chrome 121.0.0.0 Blink Android, mobile",
+//           "Miui 14.4.0 Blink Android, mobile"
+const device = navigator.userAgent;
 
 // Create trading key data
 const tkData = {
   tkAddress: generatedAccount.addr,
   expiredDate: expirationTime,
   loginAddress: client.mainWallet.address,
-  loginChainId: 'algorand',
-  device: getDeviceInfo(),
+  loginChainId: 1, // Chain ID (e.g., 1 for Algorand)
+  device: device, // e.g., "Chrome 123.0.0.0 Blink Linux, desktop"
   type: TradingKeyType.User
 };
 
@@ -261,36 +275,244 @@ client.mainWallet.tradingKey = generatedAccount.addr;
 
 Revoke an existing trading key.
 
+**Type imports:**
+```typescript
+import { ITradingKeyData, TradingKeyType } from '@ultrade/shared/browser/interfaces';
+```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `data` | `ITradingKeyData` | Yes | Trading key data object |
 
-**ITradingKeyData interface:**
+**ITradingKeyData interface** (from `@ultrade/shared`):
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
 | `tkAddress` | `string` | Yes | Trading key address to revoke |
-| `device` | `string` | Yes | Device identifier |
-| `type` | `TradingKeyType` | Yes | Key type |
+| `device` | `string` | No | Device identifier (user agent string, e.g., "Chrome 123.0.0.0 Blink Linux, desktop", "Chrome 121.0.0.0 Blink Android, mobile") |
+| `type` | `TradingKeyType` | No | Key type enum (imported from `@ultrade/shared/browser/interfaces`, see [`TradingKeyType` enum](https://github.com/ultrade-org/ultrade-shared)) |
 | `loginAddress` | `string` | Yes | Login wallet address |
-| `loginChainId` | `string \| number` | Yes | Login chain ID |
+| `loginChainId` | `number` | Yes | Login chain ID |
 
 **Returns:** `Promise<IRevokeTradingKeyResponse>`
 
 **Example:**
 
 ```typescript
+import { ITradingKeyData, TradingKeyType } from '@ultrade/shared/browser/interfaces';
+
 await client.revokeTradingKey({
   tkAddress: 'TK_ADDRESS_HERE',
-  device: 'web-browser',
+  device: navigator.userAgent, // e.g., "Chrome 123.0.0.0 Blink Linux, desktop"
   type: TradingKeyType.User,
   loginAddress: client.mainWallet?.address || '',
-  loginChainId: 'algorand'
+  loginChainId: 1 // Chain ID (e.g., 1 for Algorand)
 });
 
 console.log('Trading key revoked');
+```
+
+---
+
+## System
+
+### getSettings
+
+Get platform settings.
+
+**Returns:** `Promise<SettingsInit>`
+
+**Note:** Returns an object with dynamic keys based on `SettingIds` enum. Common properties include:
+- `partnerId`: Partner ID
+- `isUltrade`: Whether it's Ultrade platform
+- `companyId`: Company ID
+- `currentCountry`: Current country (optional)
+- Various setting values indexed by `SettingIds` enum keys
+
+**Example:**
+
+```typescript
+const settings = await client.getSettings();
+
+console.log('Company ID:', settings.companyId);
+console.log('Partner ID:', settings.partnerId);
+console.log('Is Ultrade:', settings.isUltrade);
+console.log('Current country:', settings.currentCountry);
+// Access specific settings by SettingIds enum
+console.log('App title:', settings[SettingIds.APP_TITLE]);
+```
+
+### getVersion
+
+Get API version information.
+
+**Returns:** `Promise<ISystemVersion>`
+
+**ISystemVersion interface:**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `version` | `string \| null` | API version string |
+
+**Example:**
+
+```typescript
+const version = await client.getVersion();
+
+console.log('API version:', version.version);
+```
+
+### getMaintenance
+
+Get maintenance status.
+
+**Returns:** `Promise<ISystemMaintenance>`
+
+**ISystemMaintenance interface:**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `mode` | `MaintenanceMode` | Maintenance mode enum |
+
+**Example:**
+
+```typescript
+import { MaintenanceMode } from '@ultrade/ultrade-js-sdk';
+
+const maintenance = await client.getMaintenance();
+
+if (maintenance.mode === MaintenanceMode.ACTIVE) {
+  console.log('Platform is under maintenance');
+}
+```
+
+### ping
+
+Check latency to the server.
+
+**Returns:** `Promise<number>` - Latency in milliseconds
+
+**Example:**
+
+```typescript
+const latency = await client.ping();
+
+console.log(`Server latency: ${latency}ms`);
+```
+
+### getChains
+
+Get supported blockchain chains.
+
+**Returns:** `Promise<Chain[]>`
+
+**Chain interface:**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `chainId` | `number` | Chain ID |
+| `whChainId` | `string` | Wormhole chain ID |
+| `tmc` | `string` | TMC identifier |
+| `name` | `BLOCKCHAINS` | Blockchain name enum |
+
+**Example:**
+
+```typescript
+const chains = await client.getChains();
+
+chains.forEach(chain => {
+  console.log(`${chain.name} (Chain ID: ${chain.chainId}, WH Chain ID: ${chain.whChainId})`);
+});
+```
+
+### getDollarValues
+
+Get USD values for assets.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `assetIds` | `number[]` | No | Array of asset IDs (default: empty array for all) |
+
+**Returns:** `Promise<IGetDollarValues>`
+
+**Note:** Returns an object with dynamic keys (`[key: string]: number`), where keys are asset IDs and values are USD prices.
+
+**Example:**
+
+```typescript
+// Get prices for specific assets
+const prices = await client.getDollarValues([0, 1, 2]);
+
+// Get prices for all assets
+const allPrices = await client.getDollarValues();
+
+// Access prices by asset ID
+Object.keys(prices).forEach(assetId => {
+  console.log(`Asset ${assetId}: $${prices[assetId]}`);
+});
+```
+
+### getTransactionDetalis
+
+Get detailed transaction information.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `transactionId` | `number` | Yes | Transaction ID |
+
+**Returns:** `Promise<ITransactionDetails>`
+
+**Example:**
+
+```typescript
+const details = await client.getTransactionDetalis(12345);
+
+console.log('Transaction:', {
+  id: details.id,
+  primaryId: details.primaryId,
+  actionType: details.action_type,
+  amount: details.amount,
+  status: details.status,
+  targetAddress: details.targetAddress,
+  timestamp: details.timestamp,
+  createdAt: details.createdAt,
+  fee: details.fee
+});
+```
+
+### getWithdrawalFee
+
+Get withdrawal fee for an asset.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `assetAddress` | `string` | Yes | Asset address |
+| `chainId` | `number` | Yes | Chain ID |
+
+**Returns:** `Promise<IWithdrawalFee>`
+
+**IWithdrawalFee interface:**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `fee` | `string` | Withdrawal fee amount |
+| `dollarValue` | `string` | Fee value in USD |
+
+**Example:**
+
+```typescript
+const fee = await client.getWithdrawalFee('ASSET_ADDRESS', 1);
+
+console.log('Withdrawal fee:', fee.fee);
+console.log('Fee in USD:', fee.dollarValue);
 ```
 
 ---
@@ -447,7 +669,7 @@ Get list of trading pairs matching a pattern.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `mask` | `string` | No | Search mask (e.g., 'ALGO*') |
+| `mask` | `string` | No | Search mask (e.g., 'ALGO') |
 
 **Returns:** `Promise<IGetSymbols>`
 
@@ -462,7 +684,7 @@ Get list of trading pairs matching a pattern.
 **Example:**
 
 ```typescript
-const symbols = await client.getSymbols('ALGO*');
+const symbols = await client.getSymbols('ALGO');
 
 symbols.forEach(symbol => {
   console.log('Pair:', symbol.pairKey);
@@ -564,9 +786,9 @@ Place a new order.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `order` | `CreateOrderArgs` | Yes | Order creation data object |
+| `order` | `CreateSpotOrderArgs` | Yes | Order creation data object |
 
-**CreateOrderArgs interface:**
+**CreateSpotOrderArgs interface:**
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
@@ -1086,6 +1308,12 @@ console.log('Pending transactions:', pending.length);
 
 Get user's trading keys.
 
+**Type imports:**
+```typescript
+import { ITradingKey } from '@ultrade/ultrade-js-sdk';
+import { TradingKeyType } from '@ultrade/shared/browser/interfaces';
+```
+
 **Returns:** `Promise<ITradingKey>`
 
 **Note:** Returns a single `ITradingKey` object, not an array.
@@ -1098,12 +1326,14 @@ Get user's trading keys.
 | `createdAt` | `Date` | Creation timestamp |
 | `expiredAt` | `Date` | Expiration timestamp |
 | `orders` | `number` | Number of orders |
-| `device` | `string` | Device identifier |
-| `type` | `TradingKeyType` | Key type (optional) |
+| `device` | `string` | Device identifier (user agent string, e.g., "Chrome 123.0.0.0 Blink Linux, desktop", "Chrome 121.0.0.0 Blink Android, mobile") |
+| `type` | `TradingKeyType` | Key type enum (optional, imported from `@ultrade/shared/browser/interfaces`, see [`TradingKeyType` enum](https://github.com/ultrade-org/ultrade-shared)) |
 
 **Example:**
 
 ```typescript
+import { TradingKeyType } from '@ultrade/shared/browser/interfaces';
+
 const tradingKey = await client.getTradingKeys();
 
 console.log('Trading key address:', tradingKey.address);
@@ -1449,207 +1679,6 @@ Unsubscribe from WebSocket streams.
 ```typescript
 // Unsubscribe using handler ID
 client.unsubscribe(handlerId);
-```
-
----
-
-## System
-
-### getSettings
-
-Get platform settings.
-
-**Returns:** `Promise<SettingsInit>`
-
-**Note:** Returns an object with dynamic keys based on `SettingIds` enum. Common properties include:
-- `partnerId`: Partner ID
-- `isUltrade`: Whether it's Ultrade platform
-- `companyId`: Company ID
-- `currentCountry`: Current country (optional)
-- Various setting values indexed by `SettingIds` enum keys
-
-**Example:**
-
-```typescript
-const settings = await client.getSettings();
-
-console.log('Company ID:', settings.companyId);
-console.log('Partner ID:', settings.partnerId);
-console.log('Is Ultrade:', settings.isUltrade);
-console.log('Current country:', settings.currentCountry);
-// Access specific settings by SettingIds enum
-console.log('App title:', settings[SettingIds.APP_TITLE]);
-```
-
-### getVersion
-
-Get API version information.
-
-**Returns:** `Promise<ISystemVersion>`
-
-**ISystemVersion interface:**
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `version` | `string \| null` | API version string |
-
-**Example:**
-
-```typescript
-const version = await client.getVersion();
-
-console.log('API version:', version.version);
-```
-
-### getMaintenance
-
-Get maintenance status.
-
-**Returns:** `Promise<ISystemMaintenance>`
-
-**ISystemMaintenance interface:**
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `mode` | `MaintenanceMode` | Maintenance mode enum |
-
-**Example:**
-
-```typescript
-import { MaintenanceMode } from '@ultrade/ultrade-js-sdk';
-
-const maintenance = await client.getMaintenance();
-
-if (maintenance.mode === MaintenanceMode.ACTIVE) {
-  console.log('Platform is under maintenance');
-}
-```
-
-### ping
-
-Check latency to the server.
-
-**Returns:** `Promise<number>` - Latency in milliseconds
-
-**Example:**
-
-```typescript
-const latency = await client.ping();
-
-console.log(`Server latency: ${latency}ms`);
-```
-
-### getChains
-
-Get supported blockchain chains.
-
-**Returns:** `Promise<Chain[]>`
-
-**Chain interface:**
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `chainId` | `number` | Chain ID |
-| `whChainId` | `string` | Wormhole chain ID |
-| `tmc` | `string` | TMC identifier |
-| `name` | `BLOCKCHAINS` | Blockchain name enum |
-
-**Example:**
-
-```typescript
-const chains = await client.getChains();
-
-chains.forEach(chain => {
-  console.log(`${chain.name} (Chain ID: ${chain.chainId}, WH Chain ID: ${chain.whChainId})`);
-});
-```
-
-### getDollarValues
-
-Get USD values for assets.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `assetIds` | `number[]` | No | Array of asset IDs (default: empty array for all) |
-
-**Returns:** `Promise<IGetDollarValues>`
-
-**Note:** Returns an object with dynamic keys (`[key: string]: number`), where keys are asset IDs and values are USD prices.
-
-**Example:**
-
-```typescript
-// Get prices for specific assets
-const prices = await client.getDollarValues([0, 1, 2]);
-
-// Get prices for all assets
-const allPrices = await client.getDollarValues();
-
-// Access prices by asset ID
-Object.keys(prices).forEach(assetId => {
-  console.log(`Asset ${assetId}: $${prices[assetId]}`);
-});
-```
-
-### getTransactionDetalis
-
-Get detailed transaction information.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `transactionId` | `number` | Yes | Transaction ID |
-
-**Returns:** `Promise<ITransactionDetails>`
-
-**Example:**
-
-```typescript
-const details = await client.getTransactionDetalis(12345);
-
-console.log('Transaction:', {
-  id: details.id,
-  primaryId: details.primaryId,
-  actionType: details.action_type,
-  amount: details.amount,
-  status: details.status,
-  targetAddress: details.targetAddress,
-  timestamp: details.timestamp,
-  createdAt: details.createdAt,
-  fee: details.fee
-});
-```
-
-### getWithdrawalFee
-
-Get withdrawal fee for an asset.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `assetAddress` | `string` | Yes | Asset address |
-| `chainId` | `number` | Yes | Chain ID |
-
-**Returns:** `Promise<IWithdrawalFee>`
-
-**IWithdrawalFee interface:**
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `fee` | `string` | Withdrawal fee amount |
-| `dollarValue` | `string` | Fee value in USD |
-
-**Example:**
-
-```typescript
-const fee = await client.getWithdrawalFee('ASSET_ADDRESS', 1);
-
-console.log('Withdrawal fee:', fee.fee);
-console.log('Fee in USD:', fee.dollarValue);
 ```
 
 ---

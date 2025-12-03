@@ -2,9 +2,9 @@
  * Trading-related method arguments
  */
 
-import { CreateOrderArgs, CancelOrderArgs } from '@interface';
+import { CreateSpotOrderArgs, CancelOrderArgs } from '@interface';
 
-export interface ICreateOrderArgs extends CreateOrderArgs {}
+export interface ICreateSpotOrderArgs extends CreateSpotOrderArgs {}
 
 export interface ICancelOrderArgs extends CancelOrderArgs {}
 

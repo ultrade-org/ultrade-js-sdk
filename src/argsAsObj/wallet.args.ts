@@ -2,7 +2,7 @@
  * Wallet-related method arguments
  */
 
-import { CreateWithdrawalWallet, UpdateWithdrawalWallet, IWhiteList } from '@ultrade/shared/browser/interfaces';
+import { CreateWithdrawalWallet, UpdateWithdrawalWallet, IWhitelist } from '@ultrade/shared/browser/interfaces';
 
 export interface IGetWalletTransactionsArgs {
   type: string;
@@ -16,7 +16,7 @@ export interface IGetTransfersArgs {
 }
 
 export interface IAddWhitelistArgs {
-  data: IWhiteList;
+  data: IWhitelist;
 }
 
 export interface IDeleteWhitelistArgs {

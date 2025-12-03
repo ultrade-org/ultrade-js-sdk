@@ -211,7 +211,7 @@ interface IGetSymbolsItem {
 
 export type IGetSymbols = IGetSymbolsItem[]
 
-import { CreateOrderArgs, CancelOrderArgs } from "@interface";
+import { CancelOrderArgs, CreateSpotOrderArgs } from "@interface";
 
 export interface ICancelOrderResponse {
   orderId: number;
@@ -253,7 +253,7 @@ export interface IMarketForClient {
   getKycStatus(): Promise<IGetKycStatus>
   getKycInitLink(embeddedAppUrl: string | null): Promise<IGetKycInitLink>
   getDollarValues(assetIds?: number[]): Promise<IGetDollarValues>
-  createOrder(order: CreateOrderArgs): Promise<IOrderDto>;
+  createSpotOrder(order: CreateSpotOrderArgs): Promise<IOrderDto>;
   cancelOrder(order: CancelOrderArgs): Promise<ICancelOrderResponse>;
   cancelMultipleOrders(data: { orderIds?: number[]; pairId?: number }): Promise<ICancelMultipleOrdersResponse>;
 }

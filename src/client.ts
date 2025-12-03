@@ -9,7 +9,7 @@ import {
   makeCreateOrderMsg,
 } from '@ultrade/shared/browser/helpers/codex.helper';
 import { makeWithdrawMsg } from '@ultrade/shared/browser/helpers/withdraw.helper';
-import { ICreateOrderData } from '@ultrade/shared/browser/interfaces';
+import { ICreateSpotOrderData } from '@ultrade/shared/browser/interfaces';
 import { ITradingKeyData, TradingKeyType, TradingKeyView } from '@ultrade/shared/browser/interfaces';
 import {
   ILoginData,
@@ -29,7 +29,7 @@ import {
   AuthCredentials,
   ClientOptions,
   CancelOrderArgs,
-  CreateOrderArgs,
+  CreateSpotOrderArgs,
   Signer,
   SubscribeOptions,
   TelegramData,
@@ -731,16 +731,15 @@ export class Client implements IClient {
     );
   }
 
-  public async createOrder(order: CreateOrderArgs): Promise<IOrderDto> {
+  public async createSpotOrder(order: CreateSpotOrderArgs): Promise<IOrderDto> {
     const _daysInSec = DEFAULT_ORDER_EXPIRATION_DAYS * 24 * 60 * 60;
     const expiredTime = Math.floor(Date.now() / 1000) + _daysInSec;
-    const data: ICreateOrderData = {
+    const data: ICreateSpotOrderData = {
       ...order,
       version: ORDER_MSG_VERSION,
       expiredTime,
       random: getRandomInt(1, Number.MAX_SAFE_INTEGER),
     };
-    console.log('CreateOrderData', data);
     const encoding = 'hex';
     const message = Buffer.from(makeCreateOrderMsg(data)).toString(encoding);
 
