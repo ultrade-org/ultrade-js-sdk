@@ -17,6 +17,7 @@ export interface IGetPriceArgs {
 export interface IGetDepthArgs {
   symbol: string;
   depth: number;
+  baseDecimal: number;
 }
 
 export interface IGetSymbolsArgs {

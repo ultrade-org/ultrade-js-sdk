@@ -6,8 +6,10 @@ import {
   IWalletForClient,
   IAffiliateForClient,
   ISocialForClient,
+  SubscribeOptions,
 } from "@interface";
 import { Network } from "@const"
+import { STREAMS } from "@enum";
 
 export interface ClientOptions {
   network: Network;
@@ -25,5 +27,6 @@ export interface IClient
     ISystemForClient,
     IAffiliateForClient,
     ISocialForClient {
+  getSocketSubscribeOptions(symbol: string, streams: STREAMS[]): SubscribeOptions;
 }
 

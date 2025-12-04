@@ -83,7 +83,7 @@ import {
   ICancelOrderResponse,
   ICancelMultipleOrdersResponse,
 } from "@interface";
-import { PRIVATE_STREAMS } from "@enum";
+import { PRIVATE_STREAMS, STREAMS } from "@enum";
 import { createExtendedConfig, ExtendedAxiosRequestConfig, AlgodService } from "@utils";
 import { DEFAULT_LOGIN_MESSAGE, NETWORK_CONFIGS, tokenizedUrls } from "@const";
 
@@ -785,5 +785,16 @@ export class Client implements IClient {
   public async ping(): Promise<number> {
     const response = await this._axios.get(`/system/time`) as unknown as { currentTime: number };
     return Math.round(Date.now() - response.currentTime);
+  }
+
+  public getSocketSubscribeOptions(symbol: string, streams: STREAMS[]): SubscribeOptions {
+    return {
+      symbol: symbol,
+      streams: streams,
+      options: {
+        companyId: this.companyId,
+        address: this.wallet.address
+      }
+    }
   }
 }
