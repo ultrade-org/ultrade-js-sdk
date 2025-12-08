@@ -20,13 +20,12 @@ export interface ClientOptions {
 }
 
 export interface IClient
-  extends
-    IMarketForClient,
+  extends IMarketForClient,
     IAccountForClient,
     IWalletForClient,
     ISystemForClient,
     IAffiliateForClient,
     ISocialForClient {
-  getSocketSubscribeOptions(symbol: string, streams: STREAMS[]): SubscribeOptions;
+  getSocketSubscribeOptions(streams: STREAMS[]): SubscribeOptions;
 }
 

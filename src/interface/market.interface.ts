@@ -8,6 +8,37 @@ import {
   PairSettingsIds,
 } from "@enum";
 
+export interface IPair {
+  id: number;
+  base_chain_id: number;
+  base_currency: string;
+  base_decimal: number;
+  base_id: string;
+  min_order_size: string;
+  min_price_increment: string;
+  min_size_increment: string;
+  is_active: boolean;
+  pairId: number;
+  pair_key: string;
+  pair_name: string;
+  price_chain_id: number;
+  price_currency: string;
+  price_decimal: number;
+  price_id: string;
+  restrictedCountries: string[];
+  inuseWithPartners: number[];
+  pairSettings: IPairSettings;
+  delisting_date?: Date;
+  new_orders_disabled?: boolean;
+  current_price: string;
+  h: string;
+  l: string;
+  l_p: string;
+  price_24: string;
+  total_24: string;
+  volume_24: string;
+  change_24: number;
+}
 export interface IPairDto {
   id: number;
   base_chain_id: number;
@@ -212,6 +243,7 @@ interface IGetSymbolsItem {
 export type IGetSymbols = IGetSymbolsItem[]
 
 import { CancelOrderArgs, CreateSpotOrderArgs } from "@interface";
+import { IPairSettings } from '@ultrade/shared/browser/interfaces';
 
 export interface ICancelOrderResponse {
   orderId: number;

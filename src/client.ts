@@ -99,7 +99,8 @@ export class Client implements IClient {
   private localStorageService: LocalStorageService;
   private isUltradeID: boolean;
   public socketManager: SocketManager;
-  
+  public pairKey: string;
+
   constructor(
     options: ClientOptions,
     authCredentials?: AuthCredentials,
@@ -787,14 +788,14 @@ export class Client implements IClient {
     return Math.round(Date.now() - response.currentTime);
   }
 
-  public getSocketSubscribeOptions(symbol: string, streams: STREAMS[]): SubscribeOptions {
+  public getSocketSubscribeOptions(streams: STREAMS[]): SubscribeOptions {
     return {
-      symbol: symbol,
+      symbol: this?.pairKey,
       streams: streams,
       options: {
-        companyId: this.companyId,
-        address: this.wallet.address
-      }
-    }
+        companyId: this?.companyId,
+        address: this?.wallet?.address,
+      },
+    };
   }
 }

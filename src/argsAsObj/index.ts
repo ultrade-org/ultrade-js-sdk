@@ -6,3 +6,4 @@ export * from './social.args';
 export * from './auth.args';
 export * from './trading.args';
 export * from './client.args';
+export * from './settings.args';

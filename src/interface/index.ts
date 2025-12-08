@@ -9,3 +9,4 @@ export * from "./wallet.interface";
 export * from "./system.interface";
 export * from "./notification.interface";
 export * from "./affiliates.interface";
+export * from './settings.interface';
