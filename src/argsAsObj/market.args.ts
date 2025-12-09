@@ -3,8 +3,6 @@
  */
 
 export interface IGetPairListArgs {
-  companyId?: number;
-  currentCountry: string;
   selectedPairId: number;
 }
 

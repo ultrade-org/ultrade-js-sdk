@@ -789,6 +789,9 @@ export class Client implements IClient {
   }
 
   public getSocketSubscribeOptions(streams: STREAMS[]): SubscribeOptions {
+    if(!this?.pairKey) {
+      return null
+    }
     return {
       symbol: this?.pairKey,
       streams: streams,
