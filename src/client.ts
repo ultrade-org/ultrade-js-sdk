@@ -82,6 +82,7 @@ import {
   IRevokeTradingKeyResponse,
   ICancelOrderResponse,
   ICancelMultipleOrdersResponse,
+  CodexAsset,
 } from "@interface";
 import { PRIVATE_STREAMS, STREAMS } from "@enum";
 import { createExtendedConfig, ExtendedAxiosRequestConfig, AlgodService } from "@utils";
@@ -353,7 +354,7 @@ export class Client implements IClient {
     return this._axios.get(`/market/chains`);
   }
 
-  public getCodexAssets(): Promise<CodexBalanceDto> {
+  public getCodexAssets(): Promise<CodexAsset[]> {
     return this._axios.get(`/market/assets`);
   }
 

@@ -264,6 +264,32 @@ export interface ICancelMultipleOrdersResponseItem {
   filledTotal?: string;
 }
 
+export interface IDepositBalance {
+  base_available_balance: string; 
+  price_available_balance: string;
+  base_locked_balance: string;
+  price_locked_balance: string;
+}
+export interface CodexBalance {
+  loginAddress: string,
+  loginChainId: number,
+  tokenId: string,
+  tokenChainId: number,
+  availableAmount: string,
+  lockedAmount: string
+}
+export interface CodexAsset {
+  id: number,
+  address: string,
+  chainId: number,
+  unitName: string,
+  name: string,
+  decimals: number,
+  img: string,
+  cmcLink: string,
+  isGas: boolean,
+}
+
 export type ICancelMultipleOrdersResponse = ICancelMultipleOrdersResponseItem[];
 
 export interface IMarketForClient {
@@ -278,7 +304,7 @@ export interface IMarketForClient {
   getOrderById(orderId: number): Promise<Order>
   getBalances(): Promise<CodexBalanceDto[]>
   getChains(): Promise<Chain[]>
-  getCodexAssets(): Promise<CodexBalanceDto>
+  getCodexAssets(): Promise<CodexAsset[]>
   getCCTPAssets(): Promise<MappedCCTPAssets>
   getCCTPUnifiedAssets(): Promise<CCTPUnifiedAssets[]>
   getWithdrawalFee(assetAddress: string, chainId: number): Promise<IWithdrawalFee>
