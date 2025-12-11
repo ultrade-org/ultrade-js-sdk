@@ -100,7 +100,6 @@ export class Client implements IClient {
   private localStorageService: LocalStorageService;
   private isUltradeID: boolean;
   public socketManager: SocketManager;
-  public pairKey: string;
 
   constructor(
     options: ClientOptions,
@@ -789,16 +788,20 @@ export class Client implements IClient {
     return Math.round(Date.now() - response.currentTime);
   }
 
-  public getSocketSubscribeOptions(streams: STREAMS[]): SubscribeOptions {
-    if(!this?.pairKey) {
+  public getSocketSubscribeOptions(streams: STREAMS[], pairKey?: string): SubscribeOptions | null {
+
+    const companyId = this?.companyId
+    const address = this?.wallet?.address
+
+    if(!pairKey || !companyId || !address) {
       return null
     }
     return {
-      symbol: this?.pairKey,
+      symbol: pairKey,
       streams: streams,
       options: {
-        companyId: this?.companyId,
-        address: this?.wallet?.address,
+        companyId: companyId,
+        address: address,
       },
     };
   }
