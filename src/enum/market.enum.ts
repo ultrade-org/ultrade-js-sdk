@@ -5,12 +5,22 @@ export enum ORDER_STATUS {
   SELF_MATCHED,
 }
 
+export enum OrderExecutionType {
+  open = "open",
+  close = "close",
+}
+
 export enum OrderStatus {
   'Open' = 1,
   'Canceled',
   'Completed',
   'SelfMatch',
   'Expired',
+}
+
+export enum OrderExecution {
+  'open' = 1,
+  'close',
 }
 
 export enum OrderTypeEnum {
