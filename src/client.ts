@@ -746,7 +746,7 @@ export class Client implements IClient {
 
     return await this.client.signAndSendData<IOrderDto>(
       message,
-      this.client.signer.signMessageByToken,
+      this.client.signer.signMessage,
       ({ signature }) => {
         return this._axios.post(`/market/order`, { encoding, message, signature });
       },
