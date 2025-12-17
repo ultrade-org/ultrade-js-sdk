@@ -2,6 +2,8 @@
  * Market-related method arguments
  */
 
+import { OrderExecution } from "@enum";
+
 export interface IGetPairListArgs {
   selectedPairId: number;
 }
@@ -39,7 +41,7 @@ export interface IGetHistoryArgs {
 
 export interface IGetOrdersArgs {
   symbol?: string;
-  status?: number;
+  status?: OrderExecution;
   limit?: number;
   endTime?: number;
   startTime?: number;
