@@ -301,7 +301,7 @@ export class Client implements IClient {
     return this._axios.get(`/market/symbols${mask ? '?mask=' + mask : ''}`);
   }
 
-  public getLastTrades(symbol: string): Promise<IGetLastTrades> {
+  public getLastTrades(symbol: string): Promise<IGetLastTrades[]> {
     return this._axios.get(`/market/last-trades?symbol=${symbol}`);
   }
 

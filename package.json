@@ -1,6 +1,6 @@
 {
   "name": "@ultrade/ultrade-js-sdk",
-  "version": "2.0.14",
+  "version": "2.0.15",
   "description": "This package contains the original js/ts SDK.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

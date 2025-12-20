@@ -82,6 +82,10 @@ export interface IPairDto {
   volume_24?: string;
   change_24?: string;
 }
+export interface IOrderBook {
+  currentLtp: string;
+  lastLtp: string;
+}
 
 export interface IGetDepth {
   buy: string[][];
@@ -298,7 +302,7 @@ export interface IMarketForClient {
   getPrice(symbol: string): Promise<IGetPrice>
   getDepth(symbol: string, depth: number): Promise<IGetDepth> 
   getSymbols(mask?: string): Promise<IGetSymbols>
-  getLastTrades(symbol: string): Promise<IGetLastTrades>
+  getLastTrades(symbol: string): Promise<IGetLastTrades[]>
   getHistory(symbol: string, interval: string, startTime?: number, endTime?: number, limit?: number, page?: number): Promise<IGetHistoryResponse>
   getOrders(symbol?: string, status?: number, limit?: number, endTime?: number, startTime?: number): Promise<IOrderDto[]>
   getOrderById(orderId: number): Promise<Order>

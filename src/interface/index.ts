@@ -11,3 +11,5 @@ export * from "./notification.interface";
 export * from "./affiliates.interface";
 export * from './settings.interface';
 export * from './orders.interface';
+export * from './trades.interface';
+export * from './chart.interface';
