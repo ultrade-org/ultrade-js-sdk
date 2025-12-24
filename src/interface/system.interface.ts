@@ -9,6 +9,7 @@ export interface ISystemVersion {
 
 export interface ISystemMaintenance {
   mode: MaintenanceMode;
+  scheduledDate?: Date;
 }
 
 export interface IUnreadNotificationsCount {

@@ -2,10 +2,11 @@
  * Wallet-related method arguments
  */
 
+import { ACTION_TYPE } from '@enum';
 import { CreateWithdrawalWallet, UpdateWithdrawalWallet, IWhitelist } from '@ultrade/shared/browser/interfaces';
 
 export interface IGetWalletTransactionsArgs {
-  type: string;
+  type: ACTION_TYPE;
   page: number;
   limit?: number;
 }

@@ -77,7 +77,18 @@ export interface IActionHistory {
 }
 
 export interface ISocialSettings {
-  [key: string]: any;
+  isShowUltradePoints: boolean,
+  discordEnabled?: boolean,
+  telegramEnabled?: boolean,
+  telegramBotName?: string,
+  telegramBotId?: string,
+  telegramGroupId?: string,
+  telegramGroupName?: string,
+  twitterEnabled?: boolean,
+  twitterJobEnabled?: boolean,
+  twitterAccountId?: string,
+  twitterAccountName?: string,
+  guideLink?: string
 }
 
 export interface ISocialSeason {

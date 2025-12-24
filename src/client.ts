@@ -84,7 +84,7 @@ import {
   ICancelMultipleOrdersResponse,
   CodexAsset,
 } from "@interface";
-import { PRIVATE_STREAMS, STREAMS } from "@enum";
+import { ACTION_TYPE, PRIVATE_STREAMS, STREAMS } from "@enum";
 import { createExtendedConfig, ExtendedAxiosRequestConfig, AlgodService } from "@utils";
 import { DEFAULT_LOGIN_MESSAGE, NETWORK_CONFIGS, tokenizedUrls } from "@const";
 
@@ -387,7 +387,7 @@ export class Client implements IClient {
 
   //#region Wallet
 
-  public getWalletTransactions(type: string, page: number, limit: number = 100): Promise<PaginatedResult<ITransaction>> {
+  public getWalletTransactions(type: ACTION_TYPE, page: number, limit: number = 100): Promise<PaginatedResult<ITransaction>> {
     return this._axios.get(`/wallet/transactions?type=${type}&limit=${limit}&page=${page}`, createExtendedConfig({ withWalletCredentials: true }));
   }
 
