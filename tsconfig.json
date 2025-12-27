@@ -17,9 +17,6 @@
       "node"
     ],
     "paths": {
-      "@ultrade/shared/browser/*": [
-        "../shared/dist/browser/*"
-      ],
       "@utils": [
         "./src/utils/index.ts"
       ],

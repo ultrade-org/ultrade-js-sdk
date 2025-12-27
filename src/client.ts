@@ -21,7 +21,6 @@ import { OrderStatus } from "@ultrade/shared/browser/enums";
 import { makeDtwMsg, makeTransferMsg } from "@ultrade/shared/browser/helpers/codex";
 import { CreateWithdrawalWallet, UpdateWithdrawalWallet } from "@ultrade/shared/browser/interfaces";
 import { ISafeWithdrawalWallets } from "@ultrade/shared/browser/interfaces";
-import { PaginatedResult } from "@ultrade/shared/browser/interfaces"
 
 import { SocketManager } from "./sockets";
 import { LocalStorageService } from "./localStorage";
@@ -83,6 +82,9 @@ import {
   ICancelOrderResponse,
   ICancelMultipleOrdersResponse,
   CodexAsset,
+  IGetWalletTransactions,
+  IGetTransfers,
+  IPreparedGetWhiteList,
 } from "@interface";
 import { ACTION_TYPE, PRIVATE_STREAMS, STREAMS } from "@enum";
 import { createExtendedConfig, ExtendedAxiosRequestConfig, AlgodService } from "@utils";
@@ -387,7 +389,7 @@ export class Client implements IClient {
 
   //#region Wallet
 
-  public getWalletTransactions(type: ACTION_TYPE, page: number, limit: number = 100): Promise<PaginatedResult<ITransaction>> {
+  public getWalletTransactions(type: ACTION_TYPE, page: number, limit: number = 100): Promise<IGetWalletTransactions> {
     return this._axios.get(`/wallet/transactions?type=${type}&limit=${limit}&page=${page}`, createExtendedConfig({ withWalletCredentials: true }));
   }
 
@@ -395,7 +397,7 @@ export class Client implements IClient {
     return this._axios.get(`/wallet/keys`, createExtendedConfig(createExtendedConfig({ withWalletCredentials: true })));
   }
 
-  public getTransfers(page: number, limit: number = 100): Promise<PaginatedResult<ITransfer>> {
+  public getTransfers(page: number, limit: number = 100): Promise<IGetTransfers> {
     return this._axios.get(`/wallet/transfers?limit=${limit}&page=${page}`, createExtendedConfig({ withWalletCredentials: true }));
   }
 
@@ -403,7 +405,7 @@ export class Client implements IClient {
     return this._axios.get(`/wallet/transactions/pending`, createExtendedConfig({ withWalletCredentials: true }));
   }
 
-  public getWhitelist(): Promise<PaginatedResult<IGetWhiteList>> {
+  public getWhitelist(): Promise<IPreparedGetWhiteList> {
     return this._axios.get(`/wallet/whitelist`, createExtendedConfig({ withWalletCredentials: true }));
   }
 

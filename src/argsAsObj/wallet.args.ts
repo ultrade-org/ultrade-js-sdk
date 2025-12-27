@@ -3,7 +3,8 @@
  */
 
 import { ACTION_TYPE } from '@enum';
-import { CreateWithdrawalWallet, UpdateWithdrawalWallet, IWhitelist } from '@ultrade/shared/browser/interfaces';
+import { IWhiteList } from '@interface';
+import { CreateWithdrawalWallet, UpdateWithdrawalWallet } from '@ultrade/shared/browser/interfaces';
 
 export interface IGetWalletTransactionsArgs {
   type: ACTION_TYPE;
@@ -17,7 +18,7 @@ export interface IGetTransfersArgs {
 }
 
 export interface IAddWhitelistArgs {
-  data: IWhitelist;
+  data: IWhiteList;
 }
 
 export interface IDeleteWhitelistArgs {

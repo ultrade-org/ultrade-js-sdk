@@ -3,7 +3,7 @@
   "version": "2.0.15",
   "description": "This package contains the original js/ts SDK.",
   "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "types": "./dist/src/index.d.ts",
   "scripts": {
     "build": "cross-env MODE=production ts-node esbuild.config.ts",
     "dev": "ts-node esbuild.config.ts",

@@ -92,6 +92,8 @@ export interface ITransaction {
   vaaMessages: Array<OperationVAA>;
 }
 
+export type IGetWalletTransactions = PaginatedResult<ITransaction>;
+
 export interface ITradingKey {
   address: string,
   createdAt: Date,
@@ -113,6 +115,8 @@ export interface ITransfer {
   completedAt: Date,
   status: OperationStatusEnum;
 }
+
+export type IGetTransfers = PaginatedResult<ITransfer>;
 
 export interface IPendingTxn {
   id: number;
@@ -138,6 +142,7 @@ export interface IGetWhiteList {
   expiredAt: number;
 }
 
+export type IPreparedGetWhiteList = PaginatedResult<IGetWhiteList>;
 
 import {
   IWithdrawData,
@@ -152,12 +157,12 @@ export interface IWithdrawResponse {
 export interface IWalletForClient {
   getTransactionDetalis(transactionId: number): Promise<ITransactionDetails>;
   getPendingTransactions(): Promise<IPendingTxn[]>;
-  getWhitelist(): Promise<PaginatedResult<IGetWhiteList>>;
+  getWhitelist(): Promise<IPreparedGetWhiteList>;
   addWhitelist(data: IWhiteList): Promise<IGetWhiteList>;
   deleteWhitelist(whitelistId: number): Promise<void>;
-  getWalletTransactions(type: string, page: number, limit?: number): Promise<PaginatedResult<ITransaction>>;
+  getWalletTransactions(type: string, page: number, limit?: number): Promise<IGetWalletTransactions>;
   getTradingKeys(): Promise<ITradingKey>;
-  getTransfers(page: number, limit?: number): Promise<PaginatedResult<ITransfer>>;
+  getTransfers(page: number, limit?: number): Promise<IGetTransfers>;
   getAllWithdrawalWallets(): Promise<ISafeWithdrawalWallets[]>;
   getWithdrawalWalletByAddress(address: string): Promise<ISafeWithdrawalWallets>;
   createWithdrawalWallet(body: CreateWithdrawalWallet): Promise<ISafeWithdrawalWallets>;
