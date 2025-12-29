@@ -393,7 +393,7 @@ export class Client implements IClient {
     return this._axios.get(`/wallet/transactions?type=${type}&limit=${limit}&page=${page}`, createExtendedConfig({ withWalletCredentials: true }));
   }
 
-  public getTradingKeys(): Promise<ITradingKey> {
+  public getTradingKeys(): Promise<ITradingKey[]> {
     return this._axios.get(`/wallet/keys`, createExtendedConfig(createExtendedConfig({ withWalletCredentials: true })));
   }
 

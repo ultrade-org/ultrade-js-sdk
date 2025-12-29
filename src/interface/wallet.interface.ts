@@ -161,7 +161,7 @@ export interface IWalletForClient {
   addWhitelist(data: IWhiteList): Promise<IGetWhiteList>;
   deleteWhitelist(whitelistId: number): Promise<void>;
   getWalletTransactions(type: string, page: number, limit?: number): Promise<IGetWalletTransactions>;
-  getTradingKeys(): Promise<ITradingKey>;
+  getTradingKeys(): Promise<ITradingKey[]>;
   getTransfers(page: number, limit?: number): Promise<IGetTransfers>;
   getAllWithdrawalWallets(): Promise<ISafeWithdrawalWallets[]>;
   getWithdrawalWalletByAddress(address: string): Promise<ISafeWithdrawalWallets>;

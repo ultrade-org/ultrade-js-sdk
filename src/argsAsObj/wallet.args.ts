@@ -17,8 +17,7 @@ export interface IGetTransfersArgs {
   limit?: number;
 }
 
-export interface IAddWhitelistArgs {
-  data: IWhiteList;
+export interface IAddWhitelistArgs extends IWhiteList {
 }
 
 export interface IDeleteWhitelistArgs {
@@ -29,12 +28,10 @@ export interface IGetWithdrawalWalletByAddressArgs {
   address: string;
 }
 
-export interface ICreateWithdrawalWalletArgs {
-  body: CreateWithdrawalWallet;
+export interface ICreateWithdrawalWalletArgs extends CreateWithdrawalWallet {
 }
 
-export interface IUpdateWithdrawalWalletArgs {
-  params: UpdateWithdrawalWallet;
+export interface IUpdateWithdrawalWalletArgs extends UpdateWithdrawalWallet {
 }
 
 export interface IDeleteWithdrawalWalletArgs {
