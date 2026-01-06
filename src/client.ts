@@ -180,7 +180,7 @@ export class Client implements IClient {
           config.headers['CompanyId'] = this.companyId;
         }
         if (this.wallet && tradingKeyRequired(config)) {
-          const tradingKey = this.localStorageService.getMainWallet()?.tradingKey;
+          const tradingKey = this.wallet?.tradingKey;
           if (tradingKey) {
             config.headers['X-Trading-Key'] = tradingKey;
           }
