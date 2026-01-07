@@ -795,9 +795,6 @@ export class Client implements IClient {
     const companyId = this?.companyId
     const address = this?.wallet?.address
 
-    if(!pairKey || !companyId || !address) {
-      return null
-    }
     return {
       symbol: pairKey,
       streams: streams,
