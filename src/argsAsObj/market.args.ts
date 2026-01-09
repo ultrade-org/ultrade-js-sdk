@@ -2,7 +2,7 @@
  * Market-related method arguments
  */
 
-import { OrderExecution } from "@enum";
+import { OrderExecution, OrderExecutionType } from "@enum";
 
 export interface IGetPairListArgs {
   selectedPairId: number;
@@ -45,6 +45,7 @@ export interface IGetOrdersArgs {
   limit?: number;
   endTime?: number;
   startTime?: number;
+  orderHistoryTab?: OrderExecutionType;
 }
 
 export interface IGetOrderByIdArgs {
