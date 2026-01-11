@@ -282,6 +282,10 @@ export class Client implements IClient {
     this.socketManager.unsubscribe(handlerId);
   }
 
+  public unsubscribeAsync(handlerId: number): Promise<void> {
+    return this.socketManager.unsubscribeAsync(handlerId);
+  }
+
   public getPairList(companyId?: number): Promise<IPairDto[]> {
     const query = companyId ? `&companyId=${companyId}` : "";
     return this._axios.get(`/market/markets?includeAllOrders=false${query}`);

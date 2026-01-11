@@ -89,6 +89,23 @@ export class SocketManager {
     }
   }
 
+  public async unsubscribeAsync(handlerId: number): Promise<void> {
+    const options = this.socketPool[handlerId];
+    if (options && this.socket) {
+      await new Promise<void>((resolve) => {
+        this.socket!.emit('unsubscribe', options, () => {
+          resolve();
+        });
+      });
+      
+      delete this.socketPool[handlerId];
+    }
+
+    if (Object.keys(this.socketPool).length === 0 && this.socket) {
+      this.disconnect();
+    }
+  }
+
   public disconnect(): void {
     if (this.socket) {
       this.socket.disconnect();
