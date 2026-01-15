@@ -29,6 +29,5 @@ export interface IClient
   getSocketSubscribeOptions(streams: STREAMS[]): SubscribeOptions;
   subscribe(subscribeOptions: SubscribeOptions, callback: Function): number;
   unsubscribe(handlerId: number): void;
-  unsubscribeAsync(handlerId: number): Promise<void>;
 }
 

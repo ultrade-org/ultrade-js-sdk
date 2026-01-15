@@ -12,6 +12,7 @@ interface ISocketPool {
 export class SocketManager {
   private socket: Socket | null = null;
   private socketPool: ISocketPool = {};
+  private streamCounters: Map<string, number> = new Map();
   private websocketUrl: string;
   private socketIOFactory: SocketIOFactory;
 
@@ -67,11 +68,37 @@ export class SocketManager {
       callback(event, args);
     });
 
-    this.socket!.io.on('reconnect', () => {
-      this.socket!.emit('subscribe', subscribeOptions);
+    subscribeOptions.streams.forEach((stream) => {
+      const streamKey = String(stream);
+      if (!this.streamCounters.has(streamKey)) {
+        this.streamCounters.set(streamKey, 1);
+        console.log(`[SocketManager] Stream counter created: stream=${streamKey}, count=1`);
+        return;
+      }
+
+      const currentCount = this.streamCounters.get(streamKey);
+      this.streamCounters.set(streamKey, currentCount + 1);
+      console.log(`[SocketManager] Stream counter increased: stream=${streamKey}, count=${currentCount + 1}`);
     });
 
-    this.socket!.emit('subscribe', subscribeOptions);
+    const subscribeToSocket = () => {
+      if (this.socket) {
+        this.socket.emit('subscribe', subscribeOptions);
+        console.log(`[SocketManager] SUBSCRIBE: handlerId=${handlerId}, options=`, subscribeOptions, `connected=${this.socket.connected}, streamCounters=`, Object.fromEntries(this.streamCounters));
+      }
+    };
+
+    subscribeToSocket();
+
+    if (!this.socket!.connected) {
+      this.socket!.once('connect', subscribeToSocket);
+      console.log(`[SocketManager] SUBSCRIBE (also waiting for connect): handlerId=${handlerId}, options=`, subscribeOptions);
+    }
+
+    this.socket!.io.on('reconnect', () => {
+      subscribeToSocket();
+    });
+
     this.socketPool[handlerId] = subscribeOptions;
 
     return handlerId;
@@ -79,29 +106,48 @@ export class SocketManager {
 
   public unsubscribe(handlerId: number): void {
     const options = this.socketPool[handlerId];
-    if (options && this.socket) {
-      this.socket.emit('unsubscribe', options);
-      delete this.socketPool[handlerId];
+    if (!options) {
+      console.log(`[SocketManager] UNSUBSCRIBE: handlerId=${handlerId} not found in socketPool`);
+      return;
     }
 
-    if (Object.keys(this.socketPool).length === 0 && this.socket) {
-      this.disconnect();
-    }
-  }
+    const streamsToUnsubscribe: number[] = [];
 
-  public async unsubscribeAsync(handlerId: number): Promise<void> {
-    const options = this.socketPool[handlerId];
-    if (options && this.socket) {
-      await new Promise<void>((resolve) => {
-        this.socket!.emit('unsubscribe', options, () => {
-          resolve();
-        });
-      });
+    options.streams.forEach((stream) => {
+      const streamKey = String(stream);
+      if (!this.streamCounters.has(streamKey)) {
+        console.log(`[SocketManager] Stream counter not found: stream=${streamKey}, skipping unsubscribe (no subscription was made)`);
+        return;
+      }
       
-      delete this.socketPool[handlerId];
+      const currentCount = this.streamCounters.get(streamKey)!;
+      
+      if (currentCount === 1) {
+        this.streamCounters.set(streamKey, 0);
+        streamsToUnsubscribe.push(stream);
+        console.log(`[SocketManager] Stream counter <= 1, will unsubscribe: stream=${streamKey}, count=${currentCount}`);
+      } else if (currentCount > 1) {
+        const newCount = currentCount - 1;
+        this.streamCounters.set(streamKey, newCount);
+        console.log(`[SocketManager] Stream counter decreased (no unsubscribe): stream=${streamKey}, count=${newCount}`);
+      }
+    });
+
+    if (streamsToUnsubscribe.length > 0 && this.socket) {
+      const unsubscribeOptions: SubscribeOptions = {
+        ...options,
+        streams: streamsToUnsubscribe,
+      };
+      this.socket.emit('unsubscribe', unsubscribeOptions);
+      console.log(`[SocketManager] UNSUBSCRIBE: handlerId=${handlerId}, unsubscribeSentForStreams=[${streamsToUnsubscribe.join(', ')}], streamCounters=`, Object.fromEntries(this.streamCounters), `remainingSubscriptions=${Object.keys(this.socketPool).length}`);
+    } else {
+      console.log(`[SocketManager] UNSUBSCRIBE: handlerId=${handlerId}, no streams to unsubscribe (all counters > 1), streamCounters=`, Object.fromEntries(this.streamCounters), `remainingSubscriptions=${Object.keys(this.socketPool).length}`);
     }
 
+    delete this.socketPool[handlerId];
+
     if (Object.keys(this.socketPool).length === 0 && this.socket) {
+      console.log(`[SocketManager] UNSUBSCRIBE: No more subscriptions, disconnecting socket`);
       this.disconnect();
     }
   }
@@ -111,6 +157,8 @@ export class SocketManager {
       this.socket.disconnect();
       this.socket = null;
     }
+    this.streamCounters.clear();
+    console.log(`[SocketManager] DISCONNECT: All stream counters cleared`);
   }
 
   public isConnected(): boolean {
