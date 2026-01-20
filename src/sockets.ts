@@ -15,6 +15,9 @@ export class SocketManager {
   private streamCounters: Map<string, number> = new Map();
   private websocketUrl: string;
   private socketIOFactory: SocketIOFactory;
+  private callbacks: Map<number, Function> = new Map();
+  private onAnyRegistered: boolean = false;
+  private handlerIdCounter: number = 0;
 
   constructor(
     url: string,
@@ -48,6 +51,8 @@ export class SocketManager {
         this.onConnectError!(err as Error);
       });
     }
+
+    this.setupReconnectHandler();
   }
 
   public getSocket(): Socket | null {
@@ -58,15 +63,25 @@ export class SocketManager {
     subscribeOptions: SubscribeOptions,
     callback: Function
   ): number {
-    const handlerId = Date.now();
+    const handlerId = Date.now() + (++this.handlerIdCounter);
 
     if (this.socket === null) {
       this.initializeSocket();
     }
 
-    this.socket!.onAny((event: string, ...args: unknown[]) => {
-      callback(event, args);
-    });
+    // Store callback for this handler
+    this.callbacks.set(handlerId, callback);
+
+    // Register onAny listener only once
+    if (!this.onAnyRegistered) {
+      this.socket!.onAny((event: string, ...args: unknown[]) => {
+        // Call all registered callbacks
+        this.callbacks.forEach((cb) => {
+          cb(event, args);
+        });
+      });
+      this.onAnyRegistered = true;
+    }
 
     subscribeOptions.streams.forEach((stream) => {
       const streamKey = String(stream);
@@ -95,16 +110,28 @@ export class SocketManager {
       console.log(`[SocketManager] SUBSCRIBE (also waiting for connect): handlerId=${handlerId}, options=`, subscribeOptions);
     }
 
-    this.socket!.io.on('reconnect', () => {
-      subscribeToSocket();
-    });
-
     this.socketPool[handlerId] = subscribeOptions;
 
     return handlerId;
   }
 
+  private setupReconnectHandler(): void {
+    if (this.socket) {
+      this.socket.io.off('reconnect');
+      this.socket.io.on('reconnect', () => {
+        // Re-subscribe all active subscriptions on reconnect
+        Object.entries(this.socketPool).forEach(([id, options]) => {
+          this.socket?.emit('subscribe', options);
+          console.log(`[SocketManager] RECONNECT re-subscribe: handlerId=${id}, options=`, options);
+        });
+      });
+    }
+  }
+
   public unsubscribe(handlerId: number): void {
+    // Remove callback for this handler
+    this.callbacks.delete(handlerId);
+
     const options = this.socketPool[handlerId];
     if (!options) {
       console.log(`[SocketManager] UNSUBSCRIBE: handlerId=${handlerId} not found in socketPool`);
@@ -158,7 +185,9 @@ export class SocketManager {
       this.socket = null;
     }
     this.streamCounters.clear();
-    console.log(`[SocketManager] DISCONNECT: All stream counters cleared`);
+    this.callbacks.clear();
+    this.onAnyRegistered = false;
+    console.log(`[SocketManager] DISCONNECT: All stream counters and callbacks cleared`);
   }
 
   public isConnected(): boolean {

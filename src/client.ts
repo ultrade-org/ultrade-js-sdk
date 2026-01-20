@@ -259,7 +259,13 @@ export class Client implements IClient {
   }
 
   public subscribe(subscribeOptions: SubscribeOptions, callback: Function): number {
-    const requiresAuth = subscribeOptions.streams.some(stream => PRIVATE_STREAMS.includes(stream));
+    // Match server-side auth requirements: TRADES stream requires auth when address is provided
+    const requiresAuth = subscribeOptions.streams.some(stream => {
+      if (stream === STREAMS.TRADES && subscribeOptions.options?.address) {
+        return true;
+      }
+      return PRIVATE_STREAMS.includes(stream);
+    });
 
     if(requiresAuth && !this.mainWallet?.token && !this.mainWallet?.tradingKey) {
       subscribeOptions.streams = subscribeOptions.streams.filter(stream => !PRIVATE_STREAMS.includes(stream));
