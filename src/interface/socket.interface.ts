@@ -1,7 +1,9 @@
 import type { Socket } from "socket.io-client";
 
 import { STREAMS } from "@enum";
+import type { SubscribeOptions, WSOptions } from "@ultrade/shared/browser/interfaces";
 
+export type { SubscribeOptions, WSOptions } from "@ultrade/shared/browser/interfaces";
 
 export interface SocketIOFactory {
   (url: string, options?: unknown): Socket;
@@ -13,23 +15,6 @@ export interface AppSocketState {
   orderFilter: string;
   pairKey: string;
   pairId: number;
-}
-
-interface WSOptions {
-  address: string;
-  token?: string;
-  tradingKey?: string;
-  message?: string;
-  signature?: string;
-  depth?: number;
-  companyId?: number;
-  interval?: string;
-}
-
-export interface SubscribeOptions {
-  symbol: string;
-  streams: STREAMS[];
-  options: WSOptions;
 }
 
 export interface ServerToClientEvents {

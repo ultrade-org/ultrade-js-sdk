@@ -10,36 +10,36 @@
     "declaration": true,
     "declarationDir": "./dist",
     "emitDeclarationOnly": true,
-    "rootDir": ".",
-    "baseUrl": ".",
+    "rootDir": "./src",
+    "baseUrl": "./src",
     "outDir": "./dist",
     "types": [
       "node"
     ],
     "paths": {
       "@utils": [
-        "./src/utils/index.ts"
+        "./utils/index.ts"
       ],
       "@interface": [
-        "./src/interface/index.ts"
+        "./interface/index.ts"
       ],
       "@const": [
-        "./src/const/index.ts"
+        "./const/index.ts"
       ],
       "@enum": [
-        "./src/enum/index.ts"
+        "./enum/index.ts"
       ],
       "@argsAsObj": [
-        "./src/argsAsObj/index.ts"
+        "./argsAsObj/index.ts"
       ]
-    }
+    },
+    "declarationMap": false
   },
   "exclude": [
     "node_modules",
     "dist"
   ],
   "include": [
-    "src/**/*",
-    "esbuild.config.ts"
+    "src/**/*"
   ]
 }

@@ -6,7 +6,7 @@ import { baseBrowserBuildConfig, basePlugins, basePluginsForBrowser, cleanDistSy
 const production = process.env.MODE === 'production';
 const distDir = path.resolve(__dirname, 'dist');
 const srcDir = path.resolve(__dirname, 'src');
-const tsconfig = path.resolve(__dirname, 'tsconfig.json');
+const tsconfig = path.resolve(__dirname, production ? 'tsconfig.json' : 'tsconfig.dev.json');
 
 cleanDistSync(production, distDir);
 
@@ -14,18 +14,10 @@ const plugins: esbuild.Plugin[] = [
   ...basePlugins({
     production,
     src: srcDir,
-    out: path.resolve(distDir, 'src'),
+    out: distDir,
     tsconfig
   }),
   ...basePluginsForBrowser
-];
-
-const externalDeps = [
-  '@ultrade/shared',
-  '@ultrade/shared/*',
-  'algosdk',
-  'axios',
-  'react-secure-storage',
 ];
 
 const buildOptions: esbuild.BuildOptions = {
@@ -34,7 +26,6 @@ const buildOptions: esbuild.BuildOptions = {
   sourcemap: !production,
   minify: production,
   outfile: path.resolve(distDir, 'index.js'),
-  external: externalDeps,
   plugins,
 };
 
@@ -46,7 +37,7 @@ const buildOptions: esbuild.BuildOptions = {
       return;
     }
     const ctx = await esbuild.context(buildOptions);
-    await ctx.watch();
+    await ctx.watch({ delay: 70 });
     console.log('👀 Watching for changes...');
   } catch (error) {
     console.error('❌ Build failed:', error);
