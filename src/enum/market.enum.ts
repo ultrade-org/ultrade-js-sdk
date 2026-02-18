@@ -272,6 +272,5 @@ export enum TransactionType {
 export enum ACTION_TYPE {
   D = 'deposit',
   W = "withdraw",
-  F = "fast_deposit",
   T = "transfer"
 }
