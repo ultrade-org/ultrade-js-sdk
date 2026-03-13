@@ -17,6 +17,10 @@ export interface IGetTransfersArgs {
   limit?: number;
 }
 
+export interface IGetPendingActionsArgs { 
+  address: string 
+}
+
 export interface IAddWhitelistArgs extends IWhiteList {
 }
 
